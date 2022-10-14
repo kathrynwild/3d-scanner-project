@@ -1,0 +1,24 @@
+Contains info about the capture and the standard of how the info is communicated
+
+A capture contains two images. A Color image and a depth image. We are using the orbecc astra pro, which has a depth camera and a color camera.
+The depth camera has a resolution of 640x480 and thus will produce an image consisting of 640*480 pixels.
+The color camera has a resolution of 1280x720 and this will produce an image consisting of 1280*720 pixels. We'll want to switch this to 640x480 if possible to overlay on the depth image nicely
+To send to the server, the images will be turned into a byte stream.
+Each pixel contains 4 bytes. The first is the red channel value, then the green, then the red, then the alpha.
+For the depth image, the depth value will be encoded using the red, green and blue channel
+
+To send, we will put the two images side by side depth first, then color, resulting in an image 1280x480 (640*2x480).
+The "first" pixel is top left, the "second" is top row second column from the left, and so forth.
+This image will be converted into a byte stream size 1280*480*4 (4 bytes for each pixel).
+The first four bytes will be the "first" pixel (top left), the next four will be the "second" pixel (top row, second to left column), and so until each pixel is accounted for.
+Finally, the zmax and zmin (4 byte integers), and number of stairs (1 byte) appended to the stream.
+These values are used to encode the depth data, and are needed to decode it on the viewer side.
+
+With the byte stream (array) constructed we will post (send) the byte stream to the server. *Not sure what library we will use yet*
+The server will have a function made to recieve this post and store the byte stream in a data base.
+The viewer gets the different capture names stored in the database from the server and displays them as options.
+When the user selects an option on the viewer, the server retrieves the selected byte stream from the data base and sends it to the viewer.
+The viewer receives the byte stream and reconstructs the point cloud.
+
+--Talk to Bell About
+JPEG %
